@@ -2,21 +2,25 @@ package com.microsoft.samples.springopenai.data;
 
 public class EventChoice {
 
-    private String text;
+    private Delta delta;
 
     private String finishReason;
 
-    public String getText() {
-        return text;
+
+    public Delta getDelta() {
+        return delta;
     }
 
-    public void setText(String text) {
-        this.text = text;
+
+    public void setDelta(Delta delta) {
+        this.delta = delta;
     }
+
 
     public String getFinishReason() {
         return finishReason;
     }
+
 
     public void setFinishReason(String finishReason) {
         this.finishReason = finishReason;

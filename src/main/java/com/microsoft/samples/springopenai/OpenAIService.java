@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.microsoft.samples.springopenai.data.ChatCompletionRequest;
 import com.microsoft.samples.springopenai.data.CompletionRequest;
 import com.microsoft.samples.springopenai.data.EventData;
+import com.microsoft.samples.springopenai.data.Message;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 public class OpenAIService {
@@ -22,7 +27,7 @@ public class OpenAIService {
     private final Log log = LogFactory.getLog(OpenAIService.class);
 
     private final String prompt = """
-                Give me a good French recipe for tonight's dinner.
+                Hello, introduce yourself in one sentence.
                 """;
 
     @Value("${application.openai.url}")
@@ -41,22 +46,33 @@ public class OpenAIService {
     public void init() {
         client = WebClient.builder()
                 .baseUrl(openAiUrl)
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultHeader("api-key", openAiKey)
+                .defaultHeader(
+                        HttpHeaders.CONTENT_TYPE,
+                        MediaType.APPLICATION_JSON_VALUE
+                )
+                .defaultHeader(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer " + openAiKey
+                )
                 .build();
     }
 
     public Flux<String> getData() throws JsonProcessingException {
-        CompletionRequest request = new CompletionRequest();
-        request.setPrompt(prompt);
-        request.setMaxTokens(2048);
-        request.setTemperature(1.0);
-        request.setFrequencyPenalty(0.0);
-        request.setPresencePenalty(0.0);
-        request.setTopP(0.5);
-        request.setBestOf(1);
+        ChatCompletionRequest request =
+                new ChatCompletionRequest();
+
+        request.setModel("gpt-4o-mini");
+
+        request.setMessages(
+                List.of(
+                        new Message(
+                                "user",
+                                prompt
+                        )
+                )
+        );
+
         request.setStream(true);
-        request.setStop(null);
 
         String requestValue = objectMapper.writeValueAsString(request);
 
@@ -64,6 +80,18 @@ public class OpenAIService {
                 .bodyValue(requestValue)
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .retrieve()
+                .onStatus(
+                        status -> status.value() >= 400,
+                        response ->
+                                response.bodyToMono(String.class)
+                                        .flatMap(body ->
+                                                Mono.error(
+                                                        new RuntimeException(
+                                                                "OpenAI error: " + body
+                                                        )
+                                                )
+                                        )
+                )
                 .bodyToFlux(String.class)
                 .mapNotNull(event -> {
                     try {
@@ -72,8 +100,16 @@ public class OpenAIService {
                     } catch (JsonProcessingException | StringIndexOutOfBoundsException e) {
                         return null;
                     }
-                })
-                .skipUntil(event -> !event.getChoices().get(0).getText().equals("\n"))
-                .map(event -> event.getChoices().get(0).getText());
+                }).skipUntil(event ->
+                        event.getChoices()
+                                .get(0)
+                                .getDelta()
+                                .getContent() != null
+                ).mapNotNull(event ->
+                        event.getChoices()
+                                .get(0)
+                                .getDelta()
+                                .getContent()
+                );
     }
 }

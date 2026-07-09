@@ -21,6 +21,14 @@ public class ChatController {
         this.ollamaService = ollamaService;
     }
 
+    // it returns text like "data:Dependency
+    //data: Injection
+    //data: (
+    //data:DI
+    //data:)
+    //data: is
+    //data: a
+    //data: design" , Normally the frontend (JavaScript, React, Vue, etc.) receives: "data:Hello data: World" and strips off the data: prefix before displaying
     @GetMapping(
             value="/",
             produces = MediaType.TEXT_EVENT_STREAM_VALUE

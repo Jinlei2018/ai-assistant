@@ -4,10 +4,12 @@ import com.jinlei.aiassistant.model.ollama.Message;
 import com.jinlei.aiassistant.model.ollama.OllamaRequest;
 import com.jinlei.aiassistant.model.ollama.OllamaResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -32,31 +34,23 @@ public class OllamaService {
     }
 
 
-    public Mono<String> chat(String prompt) {
-
+    public Flux<String> chatStream(String prompt) {
 
         OllamaRequest request = new OllamaRequest();
 
         request.setModel(model);
-
-        request.setMessages(
-                List.of(
-                        new Message(
-                                "user",
-                                prompt
-                        )
-                )
-        );
-
-        request.setStream(false);
-
+        request.setStream(true);
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message("user", prompt));
+        request.setMessages(messages);
 
         return client.post()
+                .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
-                .bodyToMono(OllamaResponse.class)
-                .map(response ->
-                        response.getMessage().getContent()
-                );
+                .bodyToFlux(OllamaResponse.class)
+                .filter(r -> r.getMessage() != null)
+                .map(r -> r.getMessage().getContent())
+                .filter(content -> content != null && !content.isBlank());
     }
 }

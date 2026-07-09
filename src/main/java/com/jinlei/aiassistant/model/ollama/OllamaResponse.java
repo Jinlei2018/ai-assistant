@@ -1,4 +1,4 @@
-package com.microsoft.samples.springopenai.ollama;
+package com.jinlei.aiassistant.model.ollama;
 
 public class OllamaResponse {
 

@@ -1,8 +1,8 @@
-package com.microsoft.samples.springopenai;
+package com.jinlei.aiassistant.service;
 
-import com.microsoft.samples.springopenai.ollama.Message;
-import com.microsoft.samples.springopenai.ollama.OllamaRequest;
-import com.microsoft.samples.springopenai.ollama.OllamaResponse;
+import com.jinlei.aiassistant.model.ollama.Message;
+import com.jinlei.aiassistant.model.ollama.OllamaRequest;
+import com.jinlei.aiassistant.model.ollama.OllamaResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

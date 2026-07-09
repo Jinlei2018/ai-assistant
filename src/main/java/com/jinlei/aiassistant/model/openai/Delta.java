@@ -1,4 +1,4 @@
-package com.microsoft.samples.springopenai.data;
+package com.jinlei.aiassistant.model.openai;
 
 public class Delta {
 

@@ -1,13 +1,12 @@
-package com.microsoft.samples.springopenai;
+package com.jinlei.aiassistant.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.microsoft.samples.springopenai.data.ChatCompletionRequest;
-import com.microsoft.samples.springopenai.data.CompletionRequest;
-import com.microsoft.samples.springopenai.data.EventData;
-import com.microsoft.samples.springopenai.data.Message;
+import com.jinlei.aiassistant.model.openai.ChatCompletionRequest;
+import com.jinlei.aiassistant.model.openai.EventData;
+import com.jinlei.aiassistant.model.openai.Message;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -1,4 +1,4 @@
-package com.microsoft.samples.springopenai.data;
+package com.jinlei.aiassistant.model.openai;
 
 import java.util.List;
 

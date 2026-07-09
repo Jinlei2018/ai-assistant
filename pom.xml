@@ -8,11 +8,11 @@
         <version>3.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.microsoft.samples.springopenai</groupId>
-    <artifactId>springopenai</artifactId>
+    <groupId>com.jinlei</groupId>
+    <artifactId>ai-assistant</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springopenai</name>
-    <description>Automate fixing accessibility issues with AI</description>
+    <name>AI Assistant</name>
+    <description>Enterprise AI Assistant built with Spring Boot, Ollama and OpenAI</description>
     <properties>
         <java.version>17</java.version>
     </properties>

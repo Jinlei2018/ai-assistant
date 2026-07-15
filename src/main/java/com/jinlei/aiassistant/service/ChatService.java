@@ -1,18 +1,19 @@
 package com.jinlei.aiassistant.service;
 
+import com.jinlei.aiassistant.provider.AIClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
 @Service
 public class ChatService {
 
-    private final OllamaService ollamaService;
+    private final AIClient aiClient;
 
-    public ChatService(OllamaService ollamaService) {
-        this.ollamaService = ollamaService;
+    public ChatService(AIClient aiClient) {
+        this.aiClient = aiClient;
     }
 
     public Flux<String> chat(String prompt) {
-        return ollamaService.chatStream(prompt);
+        return aiClient.chat(prompt);
     }
 }

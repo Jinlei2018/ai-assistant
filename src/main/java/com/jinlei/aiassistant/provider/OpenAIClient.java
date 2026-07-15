@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.service;
+package com.jinlei.aiassistant.provider;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -21,9 +21,9 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 
 @Service
-public class OpenAIService {
+public class OpenAIClient {
 
-    private final Log log = LogFactory.getLog(OpenAIService.class);
+    private final Log log = LogFactory.getLog(OpenAIClient.class);
 
     private final String prompt = """
                 Hello, introduce yourself in one sentence.

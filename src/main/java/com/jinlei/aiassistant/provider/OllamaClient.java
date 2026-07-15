@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.service;
+package com.jinlei.aiassistant.provider;
 
 import com.jinlei.aiassistant.model.ollama.Message;
 import com.jinlei.aiassistant.model.ollama.OllamaRequest;
@@ -14,7 +14,7 @@ import java.util.List;
 
 
 @Service
-public class OllamaService {
+public class OllamaClient implements AIClient {
 
 
     private final WebClient client;
@@ -24,7 +24,7 @@ public class OllamaService {
     private String model;
 
 
-    public OllamaService(
+    public OllamaClient(
             WebClient.Builder builder,
             @Value("${application.ollama.url}") String url
     ) {
@@ -33,8 +33,8 @@ public class OllamaService {
                 .build();
     }
 
-
-    public Flux<String> chatStream(String prompt) {
+    @Override
+    public Flux<String> chat(String prompt) {
 
         OllamaRequest request = new OllamaRequest();
 

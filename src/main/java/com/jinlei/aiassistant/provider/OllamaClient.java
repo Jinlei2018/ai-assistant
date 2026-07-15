@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-@Service
+@Service("ollama")
 public class OllamaClient implements AIClient {
 
 

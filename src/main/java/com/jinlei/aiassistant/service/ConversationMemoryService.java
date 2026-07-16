@@ -49,4 +49,12 @@ public class ConversationMemoryService {
         return getConversation(conversationId)
                 .getMessages();
     }
+
+    public void createConversation(String id) {
+
+        conversations.putIfAbsent(
+                id,
+                new Conversation()
+        );
+    }
 }

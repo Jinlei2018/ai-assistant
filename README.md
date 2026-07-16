@@ -47,7 +47,7 @@ To customize the OpenAI prompt, you can check the following resource:
 
 - [Prompt Engineering Guide](https://github.com/dair-ai/Prompt-Engineering-Guide)
 
-Start Ollama
+## Start Ollama
 ollama serve
 By default, it listens on:
 http://localhost:11434
@@ -56,14 +56,14 @@ Check if it's running
 List installed models:
 ollama list
 
-Test with curl
+### Test with curl
 Run:
 
 curl -N http://localhost:8080/api/chat ^
 -H "Content-Type: application/json" ^
 -d "{\"message\":\"Explain Spring Boot\"}"
 
-PowerShell users can also use:
+### PowerShell users can also use:
 
 Invoke-RestMethod `
   -Method Post `

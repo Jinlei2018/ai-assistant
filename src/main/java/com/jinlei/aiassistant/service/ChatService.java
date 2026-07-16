@@ -24,9 +24,9 @@ public class ChatService {
 
         return factory
                 .getClient()
-                .chat(prompt)
-                .doOnNext(
-                        memory::addAssistantMessage
+                .chat(memory.getMessages())
+                .doOnNext(response ->
+                        memory.addAssistantMessage(response)
                 );
     }
 }

@@ -1,5 +1,6 @@
 package com.jinlei.aiassistant.provider;
 
+import com.jinlei.aiassistant.model.chat.ChatMessage;
 import com.jinlei.aiassistant.model.ollama.Message;
 import com.jinlei.aiassistant.model.ollama.OllamaRequest;
 import com.jinlei.aiassistant.model.ollama.OllamaResponse;
@@ -34,23 +35,35 @@ public class OllamaClient implements AIClient {
     }
 
     @Override
-    public Flux<String> chat(String prompt) {
+    public Flux<String> chat(List<ChatMessage> chatMessages) {
 
         OllamaRequest request = new OllamaRequest();
 
         request.setModel(model);
         request.setStream(true);
-        List<Message> messages = new ArrayList<>();
-        messages.add(new Message("user", prompt));
+
+        List<Message> messages = chatMessages.stream()
+                .map(message ->
+                        new Message(
+                                message.getRole(),
+                                message.getContent()
+                        )
+                )
+                .toList();
+
         request.setMessages(messages);
+
 
         return client.post()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToFlux(OllamaResponse.class)
-                .filter(r -> r.getMessage() != null)
-                .map(r -> r.getMessage().getContent())
-                .filter(content -> content != null && !content.isBlank());
+                .filter(response ->
+                        response.getMessage() != null
+                )
+                .map(response ->
+                        response.getMessage().getContent()
+                );
     }
 }

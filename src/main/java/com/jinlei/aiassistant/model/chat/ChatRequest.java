@@ -1,17 +1,14 @@
 package com.jinlei.aiassistant.model.chat;
 
+import lombok.Data;
+
+@Data
 public class ChatRequest {
+
+    private String conversationId;
 
     private String message;
 
     public ChatRequest() {
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 }

@@ -29,6 +29,9 @@ public class ChatController {
     public Flux<String> chat(
             @RequestBody ChatRequest request
     ) {
-        return chatService.chat(request.getMessage());
+        return chatService.chat(
+                request.getConversationId(),
+                request.getMessage()
+        );
     }
 }

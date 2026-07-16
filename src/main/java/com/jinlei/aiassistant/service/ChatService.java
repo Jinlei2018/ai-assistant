@@ -8,25 +8,35 @@ import reactor.core.publisher.Flux;
 public class ChatService {
 
     private final AIClientFactory factory;
-    private final ConversationMemory memory;
+    private final ConversationMemoryService memory;
 
     public ChatService(
             AIClientFactory factory,
-            ConversationMemory memory
+            ConversationMemoryService memory
     ) {
         this.factory = factory;
         this.memory = memory;
     }
 
-    public Flux<String> chat(String prompt) {
-
-        memory.addUserMessage(prompt);
+    public Flux<String> chat(
+            String conversationId,
+            String prompt
+    ) {
+        memory.addUserMessage(
+                conversationId,
+                prompt
+        );
 
         return factory
                 .getClient()
-                .chat(memory.getMessages())
+                .chat(
+                        memory.getMessages(conversationId)
+                )
                 .doOnNext(response ->
-                        memory.addAssistantMessage(response)
+                        memory.addAssistantMessage(
+                                conversationId,
+                                response
+                        )
                 );
     }
 }

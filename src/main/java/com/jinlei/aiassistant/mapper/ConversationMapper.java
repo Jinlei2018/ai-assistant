@@ -44,4 +44,23 @@ public class ConversationMapper {
                 message.getContent()
         );
     }
+
+    public void updateIds(
+            Conversation conversation,
+            ConversationEntity entity
+    ) {
+
+        for (int i = 0; i < conversation.getMessages().size(); i++) {
+
+            Message message =
+                    conversation.getMessages().get(i);
+
+            MessageEntity messageEntity =
+                    entity.getMessages().get(i);
+
+            message.setId(
+                    messageEntity.getId()
+            );
+        }
+    }
 }

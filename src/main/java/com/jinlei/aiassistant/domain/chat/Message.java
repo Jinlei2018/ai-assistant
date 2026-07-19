@@ -1,5 +1,10 @@
 package com.jinlei.aiassistant.domain.chat;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Message {
 
     private String id;
@@ -28,18 +33,4 @@ public class Message {
         this.content = content;
     }
 
-
-    public String getId() {
-        return id;
-    }
-
-
-    public String getRole() {
-        return role;
-    }
-
-
-    public String getContent() {
-        return content;
-    }
 }

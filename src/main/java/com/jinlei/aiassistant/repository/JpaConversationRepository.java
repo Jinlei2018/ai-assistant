@@ -2,6 +2,7 @@ package com.jinlei.aiassistant.repository;
 
 import com.jinlei.aiassistant.domain.chat.Conversation;
 import com.jinlei.aiassistant.entity.chat.ConversationEntity;
+import com.jinlei.aiassistant.entity.chat.MessageEntity;
 import com.jinlei.aiassistant.mapper.ConversationMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
@@ -59,10 +60,10 @@ public class JpaConversationRepository implements ConversationRepository {
                         )
                 );
 
+        ConversationEntity saved = repository.saveAndFlush(entity);
 
-        repository.save(entity);
+        mapper.updateIds(conversation, saved);
     }
-
 
     @Override
     public boolean exists(

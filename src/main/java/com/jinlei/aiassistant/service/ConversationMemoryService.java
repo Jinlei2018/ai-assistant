@@ -2,6 +2,7 @@ package com.jinlei.aiassistant.service;
 
 import com.jinlei.aiassistant.model.chat.ChatMessage;
 import com.jinlei.aiassistant.model.chat.Conversation;
+import com.jinlei.aiassistant.repository.ConversationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,8 +12,11 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class ConversationMemoryService {
 
-    private final Map<String, Conversation> conversations =
-            new ConcurrentHashMap<>();
+    private final ConversationRepository repository;
+
+    public ConversationMemoryService(ConversationRepository repository) {
+        this.repository = repository;
+    }
 
     public void addUserMessage(
             String conversationId,
@@ -36,12 +40,21 @@ public class ConversationMemoryService {
         );
     }
 
-    private Conversation getConversation(String id) {
+    private Conversation getConversation(String conversationId) {
 
-        return conversations.computeIfAbsent(
-                id,
-                key -> new Conversation()
-        );
+        return repository.findById(conversationId)
+                .orElseGet(() -> {
+
+                    Conversation conversation =
+                            new Conversation();
+
+                    repository.save(
+                            conversationId,
+                            conversation
+                    );
+
+                    return conversation;
+                });
     }
 
     public List<ChatMessage> getMessages(String conversationId) {
@@ -50,11 +63,10 @@ public class ConversationMemoryService {
                 .getMessages();
     }
 
-    public void createConversation(String id) {
+    public void createConversation(String conversationId) {
 
-        conversations.putIfAbsent(
-                id,
-                new Conversation()
-        );
+        if (!repository.exists(conversationId)) {
+            repository.save(conversationId, new Conversation());
+        }
     }
 }

@@ -7,21 +7,19 @@ import java.util.UUID;
 @Service
 public class ConversationService {
 
-    private final ConversationMemoryService memory;
+    private final ConversationMemoryService conversationMemoryService;
 
-    public ConversationService(
-            ConversationMemoryService memory
-    ) {
-        this.memory = memory;
+    public ConversationService(ConversationMemoryService memory) {
+        this.conversationMemoryService = memory;
     }
 
     public String createConversation() {
 
-        String id = UUID.randomUUID().toString();
+        String conversationId = UUID.randomUUID().toString();
 
-        memory.createConversation(id);
+        conversationMemoryService.createConversation(conversationId);
 
-        return id;
+        return conversationId;
     }
 
 }

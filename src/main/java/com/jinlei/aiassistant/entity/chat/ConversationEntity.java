@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.model.entity;
+package com.jinlei.aiassistant.entity.chat;
 
 import jakarta.persistence.*;
 

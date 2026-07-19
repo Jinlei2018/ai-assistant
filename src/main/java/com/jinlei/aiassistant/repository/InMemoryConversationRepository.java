@@ -1,6 +1,6 @@
 package com.jinlei.aiassistant.repository;
 
-import com.jinlei.aiassistant.model.chat.Conversation;
+import com.jinlei.aiassistant.domain.chat.Conversation;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;

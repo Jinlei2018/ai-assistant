@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.model.ollama;
+package com.jinlei.aiassistant.domain.ollama;
 
 public class OllamaResponse {
 

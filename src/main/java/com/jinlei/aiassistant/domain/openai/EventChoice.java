@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.model.openai;
+package com.jinlei.aiassistant.domain.openai;
 
 public class EventChoice {
 

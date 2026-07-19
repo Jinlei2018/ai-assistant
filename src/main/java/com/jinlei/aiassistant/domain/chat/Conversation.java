@@ -1,14 +1,14 @@
-package com.jinlei.aiassistant.model.chat;
+package com.jinlei.aiassistant.domain.chat;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Conversation {
 
-    private final List<ChatMessage> messages =
+    private final List<Message> messages =
             new ArrayList<>();
 
-    public List<ChatMessage> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 

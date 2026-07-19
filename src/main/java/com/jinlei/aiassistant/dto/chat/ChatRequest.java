@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.model.chat;
+package com.jinlei.aiassistant.dto.chat;
 
 import lombok.Data;
 

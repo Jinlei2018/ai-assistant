@@ -1,6 +1,6 @@
 package com.jinlei.aiassistant.controller;
 
-import com.jinlei.aiassistant.model.chat.ConversationResponse;
+import com.jinlei.aiassistant.dto.chat.ConversationResponse;
 import com.jinlei.aiassistant.service.ConversationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

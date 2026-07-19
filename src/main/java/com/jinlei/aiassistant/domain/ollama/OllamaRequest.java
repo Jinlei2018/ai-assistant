@@ -1,4 +1,4 @@
-package com.jinlei.aiassistant.model.ollama;
+package com.jinlei.aiassistant.domain.ollama;
 
 import java.util.List;
 

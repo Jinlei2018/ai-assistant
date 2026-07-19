@@ -1,6 +1,6 @@
 package com.jinlei.aiassistant.controller;
 
-import com.jinlei.aiassistant.model.chat.ChatRequest;
+import com.jinlei.aiassistant.dto.chat.ChatRequest;
 import com.jinlei.aiassistant.service.ChatService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

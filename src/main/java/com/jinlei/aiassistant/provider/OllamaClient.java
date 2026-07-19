@@ -1,16 +1,14 @@
 package com.jinlei.aiassistant.provider;
 
-import com.jinlei.aiassistant.model.chat.ChatMessage;
-import com.jinlei.aiassistant.model.ollama.Message;
-import com.jinlei.aiassistant.model.ollama.OllamaRequest;
-import com.jinlei.aiassistant.model.ollama.OllamaResponse;
+import com.jinlei.aiassistant.domain.chat.Message;
+import com.jinlei.aiassistant.domain.ollama.OllamaRequest;
+import com.jinlei.aiassistant.domain.ollama.OllamaResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,16 +33,16 @@ public class OllamaClient implements AIClient {
     }
 
     @Override
-    public Flux<String> chat(List<ChatMessage> chatMessages) {
+    public Flux<String> chat(List<Message> chatMessages) {
 
         OllamaRequest request = new OllamaRequest();
 
         request.setModel(model);
         request.setStream(true);
 
-        List<Message> messages = chatMessages.stream()
+        List<com.jinlei.aiassistant.domain.ollama.Message> messages = chatMessages.stream()
                 .map(message ->
-                        new Message(
+                        new com.jinlei.aiassistant.domain.ollama.Message(
                                 message.getRole(),
                                 message.getContent()
                         )

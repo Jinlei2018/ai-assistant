@@ -1,13 +1,11 @@
 package com.jinlei.aiassistant.service;
 
-import com.jinlei.aiassistant.model.chat.ChatMessage;
-import com.jinlei.aiassistant.model.chat.Conversation;
+import com.jinlei.aiassistant.domain.chat.Message;
+import com.jinlei.aiassistant.domain.chat.Conversation;
 import com.jinlei.aiassistant.repository.ConversationRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class ConversationMemoryService {
@@ -26,7 +24,7 @@ public class ConversationMemoryService {
                 getConversation(conversationId);
 
         conversation.getMessages().add(
-                new ChatMessage("user", content)
+                new Message("user", content)
         );
     }
 
@@ -36,7 +34,7 @@ public class ConversationMemoryService {
                 getConversation(conversationId);
 
         conversation.getMessages().add(
-                new ChatMessage("assistant", content)
+                new Message("assistant", content)
         );
     }
 
@@ -57,7 +55,7 @@ public class ConversationMemoryService {
                 });
     }
 
-    public List<ChatMessage> getMessages(String conversationId) {
+    public List<Message> getMessages(String conversationId) {
 
         return getConversation(conversationId)
                 .getMessages();

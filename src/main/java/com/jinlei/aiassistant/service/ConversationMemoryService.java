@@ -23,18 +23,31 @@ public class ConversationMemoryService {
         Conversation conversation =
                 getConversation(conversationId);
 
-        conversation.getMessages().add(
+        conversation.addMessage(
                 new Message("user", content)
+        );
+
+        repository.save(
+                conversationId,
+                conversation
         );
     }
 
-    public void addAssistantMessage(String conversationId, String content) {
+    public void addAssistantMessage(
+            String conversationId,
+            String content
+    ) {
 
         Conversation conversation =
                 getConversation(conversationId);
 
-        conversation.getMessages().add(
+        conversation.addMessage(
                 new Message("assistant", content)
+        );
+
+        repository.save(
+                conversationId,
+                conversation
         );
     }
 

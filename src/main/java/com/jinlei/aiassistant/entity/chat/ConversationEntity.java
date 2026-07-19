@@ -1,20 +1,36 @@
 package com.jinlei.aiassistant.entity.chat;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "conversations")
 public class ConversationEntity {
 
+    @Getter
     @Id
     private String id;
 
     private Instant createdAt;
 
-    public ConversationEntity() {
+
+    @Getter
+    @OneToMany(
+            mappedBy = "conversation",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private List<MessageEntity> messages = new ArrayList<>();
+
+
+    protected ConversationEntity() {
     }
+
 
     public ConversationEntity(String id) {
         this.id = id;
@@ -22,12 +38,12 @@ public class ConversationEntity {
     }
 
 
-    public String getId() {
-        return id;
+    public void addMessage(MessageEntity message) {
+
+        messages.add(message);
+        message.setConversation(this);
+
     }
 
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
 }

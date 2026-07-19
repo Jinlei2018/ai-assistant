@@ -1,7 +1,9 @@
 package com.jinlei.aiassistant.mapper;
 
 import com.jinlei.aiassistant.domain.chat.Conversation;
+import com.jinlei.aiassistant.domain.chat.Message;
 import com.jinlei.aiassistant.entity.chat.ConversationEntity;
+import com.jinlei.aiassistant.entity.chat.MessageEntity;
 import org.springframework.stereotype.Component;
 
 
@@ -13,15 +15,33 @@ public class ConversationMapper {
             ConversationEntity entity
     ) {
 
-        return new Conversation();
+        Conversation conversation =
+                new Conversation();
+
+
+        entity.getMessages()
+                .forEach(message ->
+                        conversation.addMessage(
+                                new Message(
+                                        message.getId(),
+                                        message.getRole(),
+                                        message.getContent()
+                                )
+                        )
+                );
+
+
+        return conversation;
     }
 
 
-    public ConversationEntity toEntity(
-            String id,
-            Conversation conversation
+    public MessageEntity toEntity(
+            Message message
     ) {
 
-        return new ConversationEntity(id);
+        return new MessageEntity(
+                message.getRole(),
+                message.getContent()
+        );
     }
 }

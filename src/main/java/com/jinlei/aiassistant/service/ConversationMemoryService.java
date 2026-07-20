@@ -74,6 +74,24 @@ public class ConversationMemoryService {
                 .getMessages();
     }
 
+    public List<Message> getRecentMessages(String conversationId, int limit) {
+
+        List<Message> messages = getMessages(conversationId);
+
+
+        int start =
+                Math.max(
+                        0,
+                        messages.size() - limit
+                );
+
+
+        return messages.subList(
+                start,
+                messages.size()
+        );
+    }
+
     public void createConversation(String conversationId) {
 
         if (!repository.exists(conversationId)) {

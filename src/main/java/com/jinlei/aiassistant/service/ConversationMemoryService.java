@@ -10,10 +10,10 @@ import java.util.List;
 @Service
 public class ConversationMemoryService {
 
-    private final ConversationRepository repository;
+    private final ConversationRepository conversationRepository;
 
     public ConversationMemoryService(ConversationRepository repository) {
-        this.repository = repository;
+        this.conversationRepository = repository;
     }
 
     public void addUserMessage(
@@ -31,7 +31,7 @@ public class ConversationMemoryService {
                 "User likes Java"
         );
 
-        repository.save(
+        conversationRepository.save(
                 conversationId,
                 conversation
         );
@@ -49,7 +49,7 @@ public class ConversationMemoryService {
                 new Message("assistant", content)
         );
 
-        repository.save(
+        conversationRepository.save(
                 conversationId,
                 conversation
         );
@@ -57,13 +57,13 @@ public class ConversationMemoryService {
 
     private Conversation getConversation(String conversationId) {
 
-        return repository.findById(conversationId)
+        return conversationRepository.findById(conversationId)
                 .orElseGet(() -> {
 
                     Conversation conversation =
                             new Conversation();
 
-                    repository.save(
+                    conversationRepository.save(
                             conversationId,
                             conversation
                     );
@@ -104,22 +104,18 @@ public class ConversationMemoryService {
 
     public void createConversation(String conversationId) {
 
-        if (!repository.exists(conversationId)) {
-            repository.save(conversationId, new Conversation());
+        if (!conversationRepository.exists(conversationId)) {
+            conversationRepository.save(conversationId, new Conversation());
         }
     }
 
-    public void updateSummary(
-            String conversationId,
-            String summary
-    ) {
+    public void updateSummary(String conversationId, String summary) {
 
-        Conversation conversation =
-                getConversation(conversationId);
+        Conversation conversation = getConversation(conversationId);
 
         conversation.setSummary(summary);
 
-        repository.save(
+        conversationRepository.save(
                 conversationId,
                 conversation
         );

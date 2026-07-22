@@ -1,15 +1,15 @@
-package com.jinlei.aiassistant.domain.ollama;
+package com.jinlei.aiassistant.dto.ollama;
 
 public class OllamaResponse {
 
-    private Message message;
+    private OllamaMessage message;
     private boolean done;
 
-    public Message getMessage() {
+    public OllamaMessage getMessage() {
         return message;
     }
 
-    public void setMessage(Message message) {
+    public void setMessage(OllamaMessage message) {
         this.message = message;
     }
 

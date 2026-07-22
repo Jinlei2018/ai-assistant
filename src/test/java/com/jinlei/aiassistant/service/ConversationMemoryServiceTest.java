@@ -31,10 +31,8 @@ class ConversationMemoryServiceTest {
         String conversationId =
                 "test-conversation";
 
-
         String summary =
                 "User name is Alice and favorite color is blue";
-
 
         // update summary
         service.updateSummary(

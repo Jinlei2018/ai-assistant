@@ -1,8 +1,10 @@
 package com.jinlei.aiassistant.provider;
 
 import com.jinlei.aiassistant.domain.chat.Message;
-import com.jinlei.aiassistant.domain.ollama.OllamaRequest;
-import com.jinlei.aiassistant.domain.ollama.OllamaResponse;
+import com.jinlei.aiassistant.dto.ollama.OllamaMessage;
+import com.jinlei.aiassistant.dto.ollama.OllamaRequest;
+import com.jinlei.aiassistant.dto.ollama.OllamaResponse;
+import com.jinlei.aiassistant.mapper.OllamaMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ public class OllamaClient implements AIClient {
 
 
     private final WebClient client;
+    private final OllamaMapper mapper;
 
 
     @Value("${application.ollama.model}")
@@ -25,8 +28,9 @@ public class OllamaClient implements AIClient {
 
     public OllamaClient(
             WebClient.Builder builder,
-            @Value("${application.ollama.url}") String url
+            @Value("${application.ollama.url}") String url, OllamaMapper mapper
     ) {
+        this.mapper = mapper;
         this.client = builder
                 .baseUrl(url)
                 .build();
@@ -34,23 +38,12 @@ public class OllamaClient implements AIClient {
 
     @Override
     public Flux<String> chat(List<Message> chatMessages) {
-
-        OllamaRequest request = new OllamaRequest();
-
-        request.setModel(model);
-        request.setStream(true);
-
-        List<com.jinlei.aiassistant.domain.ollama.Message> messages = chatMessages.stream()
-                .map(message ->
-                        new com.jinlei.aiassistant.domain.ollama.Message(
-                                message.getRole(),
-                                message.getContent()
-                        )
-                )
-                .toList();
-
-        request.setMessages(messages);
-
+        OllamaRequest request =
+                mapper.toRequest(
+                        model,
+                        chatMessages,
+                        true
+                );
 
         return client.post()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -64,4 +57,5 @@ public class OllamaClient implements AIClient {
                         response.getMessage().getContent()
                 );
     }
+
 }

@@ -1,11 +1,11 @@
-package com.jinlei.aiassistant.domain.ollama;
+package com.jinlei.aiassistant.dto.ollama;
 
 import java.util.List;
 
 public class OllamaRequest {
 
     private String model;
-    private List<Message> messages;
+    private List<OllamaMessage> messages;
     private boolean stream;
 
     public String getModel() {
@@ -16,11 +16,11 @@ public class OllamaRequest {
         this.model = model;
     }
 
-    public List<Message> getMessages() {
+    public List<OllamaMessage> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(List<OllamaMessage> messages) {
         this.messages = messages;
     }
 

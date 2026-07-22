@@ -1,14 +1,14 @@
-package com.jinlei.aiassistant.domain.ollama;
+package com.jinlei.aiassistant.dto.ollama;
 
-public class Message {
+public class OllamaMessage {
 
     private String role;
     private String content;
 
-    public Message() {
+    public OllamaMessage() {
     }
 
-    public Message(String role, String content) {
+    public OllamaMessage(String role, String content) {
         this.role = role;
         this.content = content;
     }

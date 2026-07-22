@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,11 +39,31 @@ public class ChatService {
                 prompt
         );
 
-        List<Message> messages =
+        List<Message> messages = new ArrayList<>();
+
+        String summary = memory.getSummary(conversationId);
+
+        if (summary != null && !summary.isBlank()) {
+
+            messages.add(
+                    new Message(
+                            "system",
+                            """
+                            Conversation summary:
+        
+                            %s
+                            """.formatted(summary)
+                    )
+            );
+        }
+
+        messages.addAll(
                 memory.getRecentMessages(
                         conversationId,
-                        aiProperties.getMemory().getMaxMessages()
-                );
+                        aiProperties.getMemory()
+                                .getMaxMessages()
+                )
+        );
 
         log.info("Sending {} messages:", messages.size());
 

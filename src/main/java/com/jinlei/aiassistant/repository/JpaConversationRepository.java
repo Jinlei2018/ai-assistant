@@ -50,6 +50,9 @@ public class JpaConversationRepository implements ConversationRepository {
                                 new ConversationEntity(conversationId)
                         );
 
+        entity.setSummary(
+                conversation.getSummary()
+        );
 
         conversation.getMessages()
                 .stream()

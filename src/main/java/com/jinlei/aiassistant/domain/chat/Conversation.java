@@ -1,9 +1,16 @@
 package com.jinlei.aiassistant.domain.chat;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter
+@Setter
 public class Conversation {
+
+    private String summary;
 
     private final List<Message> messages = new ArrayList<>();
 
@@ -12,11 +19,5 @@ public class Conversation {
         messages.add(message);
     }
 
-
-    public List<Message> getMessages() {
-
-        return messages;
-
-    }
 
 }

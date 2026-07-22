@@ -15,9 +15,9 @@ public class ConversationMapper {
             ConversationEntity entity
     ) {
 
-        Conversation conversation =
-                new Conversation();
+        Conversation conversation = new Conversation();
 
+        conversation.setSummary(entity.getSummary());
 
         entity.getMessages()
                 .forEach(message ->

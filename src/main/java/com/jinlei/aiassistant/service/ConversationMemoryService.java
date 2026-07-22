@@ -27,6 +27,10 @@ public class ConversationMemoryService {
                 new Message("user", content)
         );
 
+        conversation.setSummary(
+                "User likes Java"
+        );
+
         repository.save(
                 conversationId,
                 conversation
@@ -74,6 +78,12 @@ public class ConversationMemoryService {
                 .getMessages();
     }
 
+    public String getSummary(String conversationId) {
+
+        return getConversation(conversationId)
+                .getSummary();
+    }
+
     public List<Message> getRecentMessages(String conversationId, int limit) {
 
         List<Message> messages = getMessages(conversationId);
@@ -97,5 +107,21 @@ public class ConversationMemoryService {
         if (!repository.exists(conversationId)) {
             repository.save(conversationId, new Conversation());
         }
+    }
+
+    public void updateSummary(
+            String conversationId,
+            String summary
+    ) {
+
+        Conversation conversation =
+                getConversation(conversationId);
+
+        conversation.setSummary(summary);
+
+        repository.save(
+                conversationId,
+                conversation
+        );
     }
 }

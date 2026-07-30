@@ -16,7 +16,7 @@ public class AIProperties {
 
     @NotBlank
     private String provider;
-
+    private String systemPrompt;
     private Memory memory = new Memory();
 
     public static class Memory {

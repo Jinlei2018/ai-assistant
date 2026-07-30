@@ -29,6 +29,8 @@ class ChatServiceTest {
 
     private AtomicReference<List<Message>> sentMessages;
 
+    private AIProperties aiProperties;
+
 
     @BeforeEach
     void setup() {
@@ -62,8 +64,7 @@ class ChatServiceTest {
                 .thenReturn(fakeClient);
 
 
-        AIProperties aiProperties =
-                new AIProperties();
+        aiProperties = new AIProperties();
 
 
         aiProperties.getMemory()
@@ -149,6 +150,37 @@ class ChatServiceTest {
                                                         "Favorite color is blue"
                                                 )
                         )
+        );
+    }
+
+    @Test
+    void shouldIncludeSystemPromptInAIContext() {
+
+        String conversationId = "test-conversation";
+
+        aiProperties.setSystemPrompt(
+                "You are a helpful assistant."
+        );
+
+        StepVerifier.create(
+                        chatService.chat(
+                                conversationId,
+                                "Hello"
+                        )
+                )
+                .expectNext("Your favorite color is blue.")
+                .verifyComplete();
+
+        List<Message> messages = sentMessages.get();
+
+        assertEquals(
+                "system",
+                messages.get(0).getRole()
+        );
+
+        assertEquals(
+                "You are a helpful assistant.",
+                messages.get(0).getContent()
         );
     }
 }

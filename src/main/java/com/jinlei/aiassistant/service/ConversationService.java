@@ -1,8 +1,8 @@
 package com.jinlei.aiassistant.service;
 
 import com.jinlei.aiassistant.config.AIProperties;
-import com.jinlei.aiassistant.domain.chat.Message;
 import com.jinlei.aiassistant.domain.chat.Conversation;
+import com.jinlei.aiassistant.domain.chat.Message;
 import com.jinlei.aiassistant.provider.AIClientFactory;
 import com.jinlei.aiassistant.repository.ConversationRepository;
 import org.springframework.stereotype.Service;
@@ -138,6 +138,18 @@ public class ConversationService {
 
         List<Message> context = new ArrayList<>();
 
+        String systemPrompt = aiProperties.getSystemPrompt();
+
+        if (systemPrompt != null && !systemPrompt.isBlank()) {
+
+            context.add(
+                    new Message(
+                            "system",
+                            systemPrompt
+                    )
+            );
+        }
+
         String summary = getSummary(conversationId);
 
         if (summary != null && !summary.isBlank()) {
@@ -191,35 +203,50 @@ public class ConversationService {
     }
 
 
-    private Mono<Void> updateConversationSummary(String conversationId) {
+    private Mono<Void> updateConversationSummary(
+            String conversationId
+    ) {
 
-        String prompt = buildSummaryPrompt(conversationId);
+        StringBuilder updatedSummary =
+                new StringBuilder();
 
-        StringBuilder summary = new StringBuilder();
-
-        return factory.getClient()
-                .chat(List.of(new Message("user", prompt)))
-                .doOnNext(summary::append)
+        return factory
+                .getClient()
+                .chat(
+                        List.of(
+                                new Message(
+                                        "user",
+                                        buildSummaryPrompt(
+                                                conversationId
+                                        )
+                                )
+                        )
+                )
+                .doOnNext(updatedSummary::append)
                 .then(
                         Mono.fromRunnable(() ->
                                 updateSummary(
                                         conversationId,
-                                        summary.toString()
+                                        updatedSummary.toString()
                                 )
                         )
                 );
     }
 
-    private String buildSummaryPrompt(
-            String conversationId
-    ) {
 
-        String currentSummary =
-                getSummary(conversationId);
+    String buildSummaryPrompt(String conversationId) {
 
-        String conversation =
-                getMessages(conversationId)
-                        .stream()
+        String currentSummary = getSummary(conversationId);
+
+        List<Message> recentMessages =
+                getRecentMessages(
+                        conversationId,
+                        aiProperties.getMemory()
+                                .getMaxMessages()
+                );
+
+        String recentConversation =
+                recentMessages.stream()
                         .map(message ->
                                 message.getRole()
                                         + ": "
@@ -227,17 +254,28 @@ public class ConversationService {
                         )
                         .collect(Collectors.joining("\n"));
 
+
         return """
-                Update the following conversation summary.
+            Update the following conversation summary.
 
-                Current summary:
-                %s
+            Current summary:
+            %s
 
-                Conversation:
-                %s
+            Recent messages:
+            %s
 
-                Return only the updated summary.
-                """
-                .formatted(currentSummary == null ? "" : currentSummary, conversation);
+            Instructions:
+            - Keep important user facts.
+            - Add new information from recent messages.
+            - Remove outdated information if necessary.
+            - Keep the summary concise.
+            - Return only the updated summary.
+            """
+                .formatted(
+                        currentSummary == null
+                                ? ""
+                                : currentSummary,
+                        recentConversation
+                );
     }
 }

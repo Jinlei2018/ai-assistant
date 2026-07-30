@@ -11,6 +11,7 @@ import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
@@ -34,17 +35,28 @@ class ConversationServiceTest {
                         );
 
 
-        AIClientFactory factory = mock(AIClientFactory.class);
+        factory = mock(AIClientFactory.class);
 
-        when(factory.getClient()).thenReturn(fakeClient);
+        when(factory.getClient())
+                .thenReturn(fakeClient);
 
-        AIProperties properties = new AIProperties();
 
-        properties.getMemory().setSummaryInterval(4);
+        aiProperties = new AIProperties();
 
-        conversationService = new ConversationService(repository, properties, factory);
+        aiProperties.getMemory()
+                .setSummaryInterval(4);
+
+        aiProperties.getMemory()
+                .setMaxMessages(20);
+
+
+        conversationService =
+                new ConversationService(
+                        repository,
+                        aiProperties,
+                        factory
+                );
     }
-
 
     @Test
     void shouldSaveAndLoadConversationSummary() {
@@ -147,6 +159,45 @@ class ConversationServiceTest {
                 conversationService.getSummary(
                         conversationId
                 )
+        );
+    }
+
+    @Test
+    void shouldUseRecentMessagesWhenUpdatingSummary() {
+
+        String conversationId = "test-summary";
+
+
+        conversationService.addUserMessage(
+                conversationId,
+                "My name is Alice"
+        );
+
+        conversationService.addAssistantMessage(
+                conversationId,
+                "Nice to meet you"
+        );
+
+
+        conversationService.addUserMessage(
+                conversationId,
+                "I like Java"
+        );
+
+
+        String prompt =
+                conversationService.buildSummaryPrompt(
+                        conversationId
+                );
+
+
+        assertTrue(
+                prompt.contains("I like Java")
+        );
+
+
+        assertTrue(
+                prompt.contains("Current summary:")
         );
     }
 }

@@ -14,19 +14,20 @@ import java.util.List;
 @Service
 public class ChatService {
 
-    private final AIClientFactory factory;
-    private final ConversationMemoryService memory;
-    private final AIProperties aiProperties;
     private static final Logger log =
             LoggerFactory.getLogger(ChatService.class);
 
+    private final AIClientFactory factory;
+    private final ConversationService conversationService;
+    private final AIProperties aiProperties;
+
     public ChatService(
             AIClientFactory factory,
-            ConversationMemoryService memory,
+            ConversationService conversationService,
             AIProperties aiProperties
     ) {
         this.factory = factory;
-        this.memory = memory;
+        this.conversationService = conversationService;
         this.aiProperties = aiProperties;
     }
 
@@ -34,55 +35,43 @@ public class ChatService {
             String conversationId,
             String prompt
     ) {
-        memory.addUserMessage(
+
+        conversationService.addUserMessage( // add new prompt to messages
                 conversationId,
                 prompt
         );
 
-        List<Message> messages = new ArrayList<>();
-
-        String summary = memory.getSummary(conversationId);
-
-        if (summary != null && !summary.isBlank()) {
-
-            messages.add(
-                    new Message(
-                            "system",
-                            """
-                            Conversation summary:
-        
-                            %s
-                            """.formatted(summary)
-                    )
-            );
-        }
-
-        messages.addAll(
-                memory.getRecentMessages(
+        List<Message> messages =
+                conversationService.buildChatContext(
                         conversationId,
-                        aiProperties.getMemory()
-                                .getMaxMessages()
-                )
-        );
+                        aiProperties.getMemory().getMaxMessages()
+                );
 
         log.info("Sending {} messages:", messages.size());
 
         messages.forEach(message ->
-                log.info("{}: {}", message.getRole(), message.getContent())
+                log.info("{}: {}",
+                        message.getRole(),
+                        message.getContent())
         );
 
-
-        StringBuilder assistantResponse = new StringBuilder();
+        StringBuilder assistantResponse =
+                new StringBuilder();
 
         return factory
                 .getClient()
                 .chat(messages)
                 .doOnNext(assistantResponse::append)
-                .doOnComplete(() ->
-                        memory.addAssistantMessage(
-                                conversationId,
-                                assistantResponse.toString()
-                        )
-                );
+                .doOnComplete(() -> {
+
+                    conversationService.addAssistantMessage(
+                            conversationId,
+                            assistantResponse.toString()
+                    );
+
+                    conversationService
+                            .maybeUpdateSummary(conversationId)
+                            .subscribe();
+                });
     }
 }

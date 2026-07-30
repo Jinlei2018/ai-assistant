@@ -23,6 +23,7 @@ public class AIProperties {
 
         @Min(1)
         private int maxMessages;
+        private int summaryInterval;
 
         public int getMaxMessages() {
             return maxMessages;
@@ -33,6 +34,14 @@ public class AIProperties {
                 int maxMessages
         ) {
             this.maxMessages = maxMessages;
+        }
+
+        public int getSummaryInterval() {
+            return summaryInterval;
+        }
+
+        public void setSummaryInterval(int summaryInterval) {
+            this.summaryInterval = summaryInterval;
         }
     }
 }

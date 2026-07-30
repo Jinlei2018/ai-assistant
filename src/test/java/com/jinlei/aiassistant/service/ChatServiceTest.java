@@ -8,7 +8,6 @@ import com.jinlei.aiassistant.repository.ConversationRepository;
 import com.jinlei.aiassistant.repository.InMemoryConversationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
@@ -16,13 +15,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
 class ChatServiceTest {
 
-    private ConversationMemoryService memory;
+    private ConversationService conversationService;
 
     private ChatService chatService;
 
@@ -32,11 +33,13 @@ class ChatServiceTest {
     @BeforeEach
     void setup() {
 
-        ConversationRepository repository = new InMemoryConversationRepository();
+        ConversationRepository repository =
+                new InMemoryConversationRepository();
 
-        memory = new ConversationMemoryService(repository);
 
-        sentMessages = new AtomicReference<>();
+        sentMessages =
+                new AtomicReference<>();
+
 
         AIClient fakeClient =
                 messages -> {
@@ -48,16 +51,43 @@ class ChatServiceTest {
                     );
                 };
 
-        AIClientFactory factory = Mockito.mock(AIClientFactory.class);
+
+        AIClientFactory factory =
+                mock(
+                        AIClientFactory.class
+                );
+
 
         when(factory.getClient())
                 .thenReturn(fakeClient);
 
-        AIProperties properties = new AIProperties();
 
-        properties.getMemory().setMaxMessages(20);
+        AIProperties aiProperties =
+                new AIProperties();
 
-        chatService = new ChatService(factory, memory, properties);
+
+        aiProperties.getMemory()
+                .setMaxMessages(20);
+
+
+        aiProperties.getMemory()
+                .setSummaryInterval(4);
+
+
+        conversationService =
+                new ConversationService(
+                        repository,
+                        aiProperties,
+                        factory
+                );
+
+
+        chatService =
+                new ChatService(
+                        factory,
+                        conversationService,
+                        aiProperties
+                );
     }
 
 
@@ -67,7 +97,8 @@ class ChatServiceTest {
         String conversationId =
                 "test-conversation";
 
-        memory.updateSummary(
+
+        conversationService.updateSummary(
                 conversationId,
                 """
                 User facts:
@@ -82,8 +113,11 @@ class ChatServiceTest {
                 - Name is Alice
                 - Favorite color is blue
                 """,
-                memory.getSummary(conversationId)
+                conversationService.getSummary(
+                        conversationId
+                )
         );
+
 
         StepVerifier.create(
                         chatService.chat(
@@ -96,19 +130,13 @@ class ChatServiceTest {
                 )
                 .verifyComplete();
 
-        System.out.println("Messages sent to AI:");
-
-        sentMessages.get()
-                .forEach(message ->
-                        System.out.println(
-                                message.getRole()
-                                        + ": "
-                                        + message.getContent()
-                        )
-                );
 
         List<Message> messages =
                 sentMessages.get();
+
+
+        assertNotNull(messages);
+
 
         assertTrue(
                 messages.stream()
@@ -118,7 +146,7 @@ class ChatServiceTest {
                                         &&
                                         message.getContent()
                                                 .contains(
-                                                        "User likes Java"
+                                                        "Favorite color is blue"
                                                 )
                         )
         );

@@ -34,10 +34,7 @@ class ConversationServiceTest {
                         );
 
 
-        AIClientFactory factory =
-                mock(
-                        AIClientFactory.class
-                );
+        AIClientFactory factory = mock(AIClientFactory.class);
 
         when(factory.getClient()).thenReturn(fakeClient);
 

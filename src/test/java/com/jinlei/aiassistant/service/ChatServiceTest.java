@@ -178,9 +178,16 @@ class ChatServiceTest {
                 messages.get(0).getRole()
         );
 
-        assertEquals(
-                "You are a helpful assistant.",
-                messages.get(0).getContent()
+        assertTrue(
+                messages.get(0)
+                        .getContent()
+                        .contains("You are a helpful assistant.")
+        );
+
+        assertTrue(
+                messages.get(0)
+                        .getContent()
+                        .contains("Today's date:")
         );
     }
 }

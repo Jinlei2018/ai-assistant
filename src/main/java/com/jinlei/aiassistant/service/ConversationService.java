@@ -8,6 +8,8 @@ import com.jinlei.aiassistant.repository.ConversationRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -141,13 +143,7 @@ public class ConversationService {
         String systemPrompt = aiProperties.getSystemPrompt();
 
         if (systemPrompt != null && !systemPrompt.isBlank()) {
-
-            context.add(
-                    new Message(
-                            "system",
-                            systemPrompt
-                    )
-            );
+            context.add(buildSystemPrompt());
         }
 
         String summary = getSummary(conversationId);
@@ -277,5 +273,23 @@ public class ConversationService {
                                 : currentSummary,
                         recentConversation
                 );
+    }
+
+    private Message buildSystemPrompt() {
+
+        String content = """
+            %s
+
+            Today's date: %s
+            """
+                .formatted(
+                        aiProperties.getSystemPrompt(),
+                        LocalDate.now().format(DateTimeFormatter.ISO_DATE)
+                );
+
+        return new Message(
+                "system",
+                content
+        );
     }
 }

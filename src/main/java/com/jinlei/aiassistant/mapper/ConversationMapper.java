@@ -18,6 +18,7 @@ public class ConversationMapper {
         Conversation conversation = new Conversation();
 
         conversation.setSummary(entity.getSummary());
+        conversation.setTitle(entity.getTitle());
 
         entity.getMessages()
                 .forEach(message ->

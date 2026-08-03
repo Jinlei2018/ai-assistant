@@ -70,6 +70,10 @@ public class ChatService {
                     );
 
                     conversationService
+                            .maybeUpdateTitle(conversationId)
+                            .subscribe();
+
+                    conversationService
                             .maybeUpdateSummary(conversationId)
                             .subscribe();
                 });

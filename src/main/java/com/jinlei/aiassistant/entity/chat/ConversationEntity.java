@@ -22,6 +22,8 @@ public class ConversationEntity {
     @Column(length = 4000)
     private String summary;
 
+    private String title;
+
     @OneToMany(
             mappedBy = "conversation",
             cascade = CascadeType.ALL,

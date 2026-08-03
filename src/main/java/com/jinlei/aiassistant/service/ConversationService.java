@@ -198,13 +198,36 @@ public class ConversationService {
         return messageCount >= interval && messageCount % interval == 0;
     }
 
+    public Mono<Void> maybeUpdateTitle(
+            String conversationId
+    ) {
+
+        if (!shouldGenerateTitle(conversationId)) {
+            return Mono.empty();
+        }
+
+        return updateConversationTitle(
+                conversationId
+        );
+    }
+
+    private boolean shouldGenerateTitle(
+            String conversationId
+    ) {
+
+        Conversation conversation =
+                getConversation(conversationId);
+
+        return conversation.getTitle() == null
+                && conversation.getMessages().size() >= 4;
+    }
+
 
     private Mono<Void> updateConversationSummary(
             String conversationId
     ) {
 
-        StringBuilder updatedSummary =
-                new StringBuilder();
+        StringBuilder updatedSummary = new StringBuilder();
 
         return factory
                 .getClient()
@@ -224,6 +247,32 @@ public class ConversationService {
                                 updateSummary(
                                         conversationId,
                                         updatedSummary.toString()
+                                )
+                        )
+                );
+    }
+
+    private Mono<Void> updateConversationTitle(String conversationId) {
+
+        StringBuilder title = new StringBuilder();
+
+        return factory.getClient()
+                .chat(
+                        List.of(
+                                new Message(
+                                        "user",
+                                        buildTitlePrompt(
+                                                conversationId
+                                        )
+                                )
+                        )
+                )
+                .doOnNext(title::append)
+                .then(
+                        Mono.fromRunnable(() ->
+                                updateTitle(
+                                        conversationId,
+                                        title.toString().trim()
                                 )
                         )
                 );
@@ -291,5 +340,51 @@ public class ConversationService {
                 "system",
                 content
         );
+    }
+
+    public String getTitle(String conversationId) {
+        return getConversation(conversationId).getTitle();
+    }
+
+    public void updateTitle(
+            String conversationId,
+            String title
+    ) {
+
+        Conversation conversation = getConversation(conversationId);
+
+        conversation.setTitle(title);
+
+        conversationRepository.save(
+                conversationId,
+                conversation
+        );
+    }
+
+    private String buildTitlePrompt(String conversationId) {
+
+        String conversation =
+                getMessages(conversationId)
+                        .stream()
+                        .map(message ->
+                                message.getRole()
+                                        + ": "
+                                        + message.getContent()
+                        )
+                        .collect(Collectors.joining("\n"));
+
+        return """
+            Generate a short title for this conversation.
+
+            Rules:
+            - 3 to 6 words
+            - No quotation marks
+            - No punctuation
+            - Return only the title
+
+            Conversation:
+            %s
+            """
+                .formatted(conversation);
     }
 }

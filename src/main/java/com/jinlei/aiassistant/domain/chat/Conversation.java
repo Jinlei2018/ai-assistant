@@ -11,6 +11,7 @@ import java.util.List;
 public class Conversation {
 
     private String summary;
+    private String title;
 
     private final List<Message> messages = new ArrayList<>();
 

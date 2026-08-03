@@ -29,11 +29,17 @@ class ConversationServiceTest {
                 new InMemoryConversationRepository();
 
         AIClient fakeClient =
-                messages ->
-                        Flux.just(
-                                "User likes Java and Spring"
-                        );
+                messages -> {
 
+                    String prompt =
+                            messages.get(0).getContent();
+
+                    if (prompt.contains("Generate a short title")) {
+                        return Flux.just("Java Learning");
+                    }
+
+                    return Flux.just("User likes Java and Spring");
+                };
 
         factory = mock(AIClientFactory.class);
 
@@ -198,6 +204,75 @@ class ConversationServiceTest {
 
         assertTrue(
                 prompt.contains("Current summary:")
+        );
+    }
+
+    @Test
+    void shouldGenerateConversationTitle() {
+
+        String conversationId = "test-conversation";
+
+        conversationService.createConversation(conversationId);
+
+        conversationService.addUserMessage(
+                conversationId,
+                "I want to learn Java"
+        );
+
+        conversationService.addAssistantMessage(
+                conversationId,
+                "Java is a programming language."
+        );
+
+        conversationService.addUserMessage(
+                conversationId,
+                "Can you teach me Spring Boot?"
+        );
+
+        conversationService.addAssistantMessage(
+                conversationId,
+                "Sure, let's start with dependency injection."
+        );
+
+        StepVerifier.create(
+                        conversationService.maybeUpdateTitle(
+                                conversationId
+                        )
+                )
+                .verifyComplete();
+
+        assertEquals(
+                "Java Learning",
+                conversationService.getTitle(
+                        conversationId
+                )
+        );
+    }
+
+    @Test
+    void shouldNotGenerateTitleTwice() {
+
+        String conversationId = "test-conversation";
+
+        conversationService.createConversation(conversationId);
+
+        conversationService.updateTitle(
+                conversationId,
+                "Existing Title"
+        );
+
+        StepVerifier.create(
+                        conversationService.maybeUpdateTitle(
+                                conversationId
+                        )
+                )
+                .verifyComplete();
+
+        assertEquals(
+                "Existing Title",
+                conversationService.getTitle(
+                        conversationId
+                )
         );
     }
 }

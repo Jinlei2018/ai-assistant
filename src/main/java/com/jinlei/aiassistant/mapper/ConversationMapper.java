@@ -6,6 +6,8 @@ import com.jinlei.aiassistant.entity.chat.ConversationEntity;
 import com.jinlei.aiassistant.entity.chat.MessageEntity;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 
 @Component
 public class ConversationMapper {
@@ -19,6 +21,9 @@ public class ConversationMapper {
 
         conversation.setSummary(entity.getSummary());
         conversation.setTitle(entity.getTitle());
+        LocalDateTime now = LocalDateTime.now();
+        conversation.setCreatedAt(now);
+        conversation.setUpdatedAt(now);
 
         entity.getMessages()
                 .forEach(message ->

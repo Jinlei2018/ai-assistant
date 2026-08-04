@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,8 @@ public class ConversationEntity {
     @Id
     private String id;
 
-    private Instant createdAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @Column(length = 4000)
     private String summary;
@@ -39,7 +41,7 @@ public class ConversationEntity {
 
     public ConversationEntity(String id) {
         this.id = id;
-        this.createdAt = Instant.now();
+        this.createdAt = LocalDateTime.now();
     }
 
 

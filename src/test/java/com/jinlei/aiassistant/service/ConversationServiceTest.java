@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
 
@@ -271,6 +270,34 @@ class ConversationServiceTest {
         assertEquals(
                 "Existing Title",
                 conversationService.getTitle(
+                        conversationId
+                )
+        );
+    }
+
+    @Test
+    void shouldSetCreatedAndUpdatedAtWhenConversationIsCreated() {
+
+        String conversationId =
+                conversationService.createConversation();
+
+        assertNotNull(
+                conversationService.getCreatedAt(
+                        conversationId
+                )
+        );
+
+        assertNotNull(
+                conversationService.getUpdatedAt(
+                        conversationId
+                )
+        );
+
+        assertEquals(
+                conversationService.getCreatedAt(
+                        conversationId
+                ),
+                conversationService.getUpdatedAt(
                         conversationId
                 )
         );

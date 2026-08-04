@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,8 @@ public class ConversationService {
 
         conversation.addMessage(new Message("user", content));
 
+        touchConversation(conversation);
+
         conversationRepository.save(
                 conversationId,
                 conversation
@@ -54,6 +57,8 @@ public class ConversationService {
                 new Message("assistant", content)
         );
 
+        touchConversation(conversation);
+
         conversationRepository.save(
                 conversationId,
                 conversation
@@ -65,8 +70,10 @@ public class ConversationService {
         return conversationRepository.findById(conversationId)
                 .orElseGet(() -> {
 
-                    Conversation conversation =
-                            new Conversation();
+                    Conversation conversation = new Conversation();
+                    LocalDateTime now = LocalDateTime.now();
+                    conversation.setCreatedAt(now);
+                    conversation.setUpdatedAt(now);
 
                     conversationRepository.save(
                             conversationId,
@@ -120,7 +127,11 @@ public class ConversationService {
     public void createConversation(String conversationId) {
 
         if (!conversationRepository.exists(conversationId)) {
-            conversationRepository.save(conversationId, new Conversation());
+            Conversation conversation = new Conversation();
+            LocalDateTime now = LocalDateTime.now();
+            conversation.setCreatedAt(now);
+            conversation.setUpdatedAt(now);
+            conversationRepository.save(conversationId, conversation);
         }
     }
 
@@ -129,6 +140,8 @@ public class ConversationService {
         Conversation conversation = getConversation(conversationId);
 
         conversation.setSummary(summary);
+
+        touchConversation(conversation);
 
         conversationRepository.save(conversationId, conversation);
     }
@@ -355,6 +368,8 @@ public class ConversationService {
 
         conversation.setTitle(title);
 
+        touchConversation(conversation);
+
         conversationRepository.save(
                 conversationId,
                 conversation
@@ -386,5 +401,25 @@ public class ConversationService {
             %s
             """
                 .formatted(conversation);
+    }
+
+    private void touchConversation(Conversation conversation) {
+
+        conversation.setUpdatedAt(
+                LocalDateTime.now()
+        );
+    }
+
+    public LocalDateTime getCreatedAt(
+            String conversationId
+    ) {
+        return getConversation(conversationId).getCreatedAt();
+    }
+
+    public LocalDateTime getUpdatedAt(
+            String conversationId
+    ) {
+
+        return getConversation(conversationId).getUpdatedAt();
     }
 }

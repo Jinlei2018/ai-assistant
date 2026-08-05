@@ -7,6 +7,7 @@ import com.jinlei.aiassistant.mapper.ConversationMapper;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -83,5 +84,14 @@ public class JpaConversationRepository implements ConversationRepository {
     ) {
 
         repository.deleteById(conversationId);
+    }
+
+    @Override
+    public List<String> findAllIds() {
+
+        return repository.findAll()
+                .stream()
+                .map(ConversationEntity::getId)
+                .toList();
     }
 }

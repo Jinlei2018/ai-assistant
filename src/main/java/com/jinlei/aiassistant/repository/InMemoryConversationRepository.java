@@ -3,6 +3,7 @@ package com.jinlei.aiassistant.repository;
 import com.jinlei.aiassistant.domain.chat.Conversation;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,5 +33,13 @@ public class InMemoryConversationRepository implements ConversationRepository {
     @Override
     public void delete(String conversationId) {
         conversations.remove(conversationId);
+    }
+
+    @Override
+    public List<String> findAllIds() {
+
+        return conversations.keySet()
+                .stream()
+                .toList();
     }
 }

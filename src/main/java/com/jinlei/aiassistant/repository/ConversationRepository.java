@@ -2,6 +2,7 @@ package com.jinlei.aiassistant.repository;
 
 import com.jinlei.aiassistant.domain.chat.Conversation;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ConversationRepository {
@@ -13,5 +14,7 @@ public interface ConversationRepository {
     boolean exists(String conversationId);
 
     void delete(String conversationId);
+
+    List<String> findAllIds();
 
 }

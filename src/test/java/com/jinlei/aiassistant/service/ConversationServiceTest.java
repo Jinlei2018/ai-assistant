@@ -1,6 +1,7 @@
 package com.jinlei.aiassistant.service;
 
 import com.jinlei.aiassistant.config.AIProperties;
+import com.jinlei.aiassistant.domain.chat.ConversationInfo;
 import com.jinlei.aiassistant.provider.AIClient;
 import com.jinlei.aiassistant.provider.AIClientFactory;
 import com.jinlei.aiassistant.repository.ConversationRepository;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
@@ -300,6 +303,34 @@ class ConversationServiceTest {
                 conversationService.getUpdatedAt(
                         conversationId
                 )
+        );
+    }
+
+    @Test
+    void shouldListConversationsSortedByUpdatedTime()
+            throws InterruptedException {
+
+        String first =
+                conversationService.createConversation();
+
+        Thread.sleep(10);
+
+        String second =
+                conversationService.createConversation();
+
+
+        List<ConversationInfo> conversations =
+                conversationService.getConversations();
+
+
+        assertEquals(
+                second,
+                conversations.get(0).getId()
+        );
+
+        assertEquals(
+                first,
+                conversations.get(1).getId()
         );
     }
 }

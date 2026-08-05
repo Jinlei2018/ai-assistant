@@ -2,6 +2,7 @@ package com.jinlei.aiassistant.service;
 
 import com.jinlei.aiassistant.config.AIProperties;
 import com.jinlei.aiassistant.domain.chat.Conversation;
+import com.jinlei.aiassistant.domain.chat.ConversationInfo;
 import com.jinlei.aiassistant.domain.chat.Message;
 import com.jinlei.aiassistant.provider.AIClientFactory;
 import com.jinlei.aiassistant.repository.ConversationRepository;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -421,5 +423,30 @@ public class ConversationService {
     ) {
 
         return getConversation(conversationId).getUpdatedAt();
+    }
+
+    public List<ConversationInfo> getConversations() {
+
+        return conversationRepository
+                .findAllIds()
+                .stream()
+                .map(id -> {
+
+                    Conversation conversation =
+                            getConversation(id);
+
+                    return new ConversationInfo(
+                            id,
+                            conversation.getTitle(),
+                            conversation.getCreatedAt(),
+                            conversation.getUpdatedAt()
+                    );
+                })
+                .sorted(
+                        Comparator.comparing(
+                                ConversationInfo::getUpdatedAt
+                        ).reversed()
+                )
+                .toList();
     }
 }

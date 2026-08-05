@@ -313,24 +313,65 @@ class ConversationServiceTest {
         String first =
                 conversationService.createConversation();
 
+        conversationService.updateTitle(
+                first,
+                "First Conversation"
+        );
+
         Thread.sleep(10);
 
         String second =
                 conversationService.createConversation();
 
+        conversationService.updateTitle(
+                second,
+                "Second Conversation"
+        );
 
         List<ConversationInfo> conversations =
                 conversationService.getConversations();
 
+        assertEquals(
+                2,
+                conversations.size()
+        );
+
+        ConversationInfo newest =
+                conversations.get(0);
 
         assertEquals(
                 second,
-                conversations.get(0).getId()
+                newest.getId()
         );
 
         assertEquals(
+                "Second Conversation",
+                newest.getTitle()
+        );
+
+        assertNotNull(
+                newest.getCreatedAt()
+        );
+
+        assertNotNull(
+                newest.getUpdatedAt()
+        );
+
+        assertNotNull(
+                newest.getMessages()
+        );
+
+        ConversationInfo oldest =
+                conversations.get(1);
+
+        assertEquals(
                 first,
-                conversations.get(1).getId()
+                oldest.getId()
+        );
+
+        assertEquals(
+                "First Conversation",
+                oldest.getTitle()
         );
     }
 }

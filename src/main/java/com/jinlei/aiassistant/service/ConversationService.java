@@ -35,7 +35,7 @@ public class ConversationService {
             String conversationId,
             String content
     ) {
-        Conversation conversation = getConversation(conversationId);
+        Conversation conversation = loadConversation(conversationId);
 
         conversation.addMessage(new Message("user", content));
 
@@ -53,7 +53,7 @@ public class ConversationService {
     ) {
 
         Conversation conversation =
-                getConversation(conversationId);
+                loadConversation(conversationId);
 
         conversation.addMessage(
                 new Message("assistant", content)
@@ -67,7 +67,7 @@ public class ConversationService {
         );
     }
 
-    private Conversation getConversation(String conversationId) {
+    public Conversation loadConversation(String conversationId) {
 
         return conversationRepository.findById(conversationId)
                 .orElseGet(() -> {
@@ -86,6 +86,34 @@ public class ConversationService {
                 });
     }
 
+    // API use
+    public ConversationInfo getConversationInfo(String conversationId) {
+
+        Conversation conversation =
+                loadConversation(conversationId);
+
+        return new ConversationInfo(
+                conversationId,
+                conversation.getTitle(),
+                conversation.getSummary(),
+                conversation.getCreatedAt(),
+                conversation.getUpdatedAt(),
+                List.copyOf(conversation.getMessages())
+        );
+    }
+
+    private Conversation getConversationEntity(
+            String conversationId
+    ) {
+
+        return conversationRepository.findById(conversationId)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Conversation not found: " + conversationId
+                        )
+                );
+    }
+
     public String createConversation() {
 
         String conversationId =
@@ -98,13 +126,13 @@ public class ConversationService {
 
     public List<Message> getMessages(String conversationId) {
 
-        return getConversation(conversationId)
+        return loadConversation(conversationId)
                 .getMessages();
     }
 
     public String getSummary(String conversationId) {
 
-        return getConversation(conversationId)
+        return loadConversation(conversationId)
                 .getSummary();
     }
 
@@ -139,7 +167,7 @@ public class ConversationService {
 
     public void updateSummary(String conversationId, String summary) {
 
-        Conversation conversation = getConversation(conversationId);
+        Conversation conversation = loadConversation(conversationId);
 
         conversation.setSummary(summary);
 
@@ -231,7 +259,7 @@ public class ConversationService {
     ) {
 
         Conversation conversation =
-                getConversation(conversationId);
+                loadConversation(conversationId);
 
         return conversation.getTitle() == null
                 && conversation.getMessages().size() >= 4;
@@ -358,7 +386,7 @@ public class ConversationService {
     }
 
     public String getTitle(String conversationId) {
-        return getConversation(conversationId).getTitle();
+        return loadConversation(conversationId).getTitle();
     }
 
     public void updateTitle(
@@ -366,7 +394,7 @@ public class ConversationService {
             String title
     ) {
 
-        Conversation conversation = getConversation(conversationId);
+        Conversation conversation = loadConversation(conversationId);
 
         conversation.setTitle(title);
 
@@ -415,17 +443,20 @@ public class ConversationService {
     public LocalDateTime getCreatedAt(
             String conversationId
     ) {
-        return getConversation(conversationId).getCreatedAt();
+        return loadConversation(conversationId).getCreatedAt();
     }
 
     public LocalDateTime getUpdatedAt(
             String conversationId
     ) {
 
-        return getConversation(conversationId).getUpdatedAt();
+        return loadConversation(conversationId).getUpdatedAt();
     }
 
     public List<ConversationInfo> getConversations() {
+        System.out.println(
+                "size is " + conversationRepository.findAllIds()
+        );
 
         return conversationRepository
                 .findAllIds()
@@ -433,13 +464,15 @@ public class ConversationService {
                 .map(id -> {
 
                     Conversation conversation =
-                            getConversation(id);
+                            loadConversation(id);
 
                     return new ConversationInfo(
                             id,
                             conversation.getTitle(),
+                            conversation.getSummary(),
                             conversation.getCreatedAt(),
-                            conversation.getUpdatedAt()
+                            conversation.getUpdatedAt(),
+                            List.copyOf(conversation.getMessages())
                     );
                 })
                 .sorted(

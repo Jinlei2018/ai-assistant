@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Mockito.when;
@@ -34,8 +35,11 @@ class ConversationControllerTest {
                                 new ConversationInfo(
                                         "123",
                                         "Java Learning",
+                                        "summary",
                                         LocalDateTime.now(),
-                                        LocalDateTime.now()
+                                        LocalDateTime.now(),
+                                        List.of()
+
                                 )
                         )
                 );
@@ -49,6 +53,37 @@ class ConversationControllerTest {
                 .isOk()
                 .expectBody()
                 .jsonPath("$[0].id")
+                .isEqualTo("123");
+    }
+
+    @Test
+    void shouldGetConversation() {
+
+        ConversationInfo info =
+                new ConversationInfo(
+                        "123",
+                        "Java",
+                        "User likes Java",
+                        LocalDateTime.now(),
+                        LocalDateTime.now(),
+                        List.of()
+                );
+
+
+        when(
+                conversationService.getConversationInfo("123")
+        )
+                .thenReturn(info);
+
+
+        webTestClient
+                .get()
+                .uri("/api/conversations/123")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .jsonPath("$.id")
                 .isEqualTo("123");
     }
 }

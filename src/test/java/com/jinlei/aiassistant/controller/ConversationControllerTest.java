@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @WebFluxTest(ConversationController.class)
@@ -85,5 +86,19 @@ class ConversationControllerTest {
                 .expectBody()
                 .jsonPath("$.id")
                 .isEqualTo("123");
+    }
+
+    @Test
+    void shouldDeleteConversation() {
+
+        webTestClient
+                .delete()
+                .uri("/api/conversations/123")
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+
+        verify(conversationService)
+                .deleteConversation("123");
     }
 }

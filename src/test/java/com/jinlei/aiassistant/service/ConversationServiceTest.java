@@ -81,13 +81,11 @@ class ConversationServiceTest {
                 summary
         );
 
-
         // read summary
         String result =
                 conversationService.getSummary(
                         conversationId
                 );
-
 
         assertEquals(
                 summary,
@@ -372,6 +370,19 @@ class ConversationServiceTest {
         assertEquals(
                 "First Conversation",
                 oldest.getTitle()
+        );
+    }
+
+    @Test
+    void shouldDeleteConversation() {
+
+        String id = conversationService.createConversation();
+
+        conversationService.deleteConversation(id);
+
+        assertEquals(
+                0,
+                conversationService.getConversations().size()
         );
     }
 }

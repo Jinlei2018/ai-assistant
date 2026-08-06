@@ -3,6 +3,7 @@ package com.jinlei.aiassistant.controller;
 import com.jinlei.aiassistant.domain.chat.ConversationInfo;
 import com.jinlei.aiassistant.dto.chat.ConversationResponse;
 import com.jinlei.aiassistant.service.ConversationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,6 +42,14 @@ public class ConversationController {
         return service.getConversationInfo(
                 conversationId
         );
+    }
+
+    @DeleteMapping("/{conversationId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteConversation(
+            @PathVariable String conversationId
+    ) {
+        service.deleteConversation(conversationId);
     }
 
 }

@@ -482,4 +482,8 @@ public class ConversationService {
                 )
                 .toList();
     }
+
+    public void deleteConversation(String conversationId) {
+        conversationRepository.delete(conversationId);
+    }
 }

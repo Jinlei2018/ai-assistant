@@ -1,5 +1,6 @@
 package com.jinlei.aiassistant.controller;
 
+import com.jinlei.aiassistant.controller.request.RenameConversationRequest;
 import com.jinlei.aiassistant.domain.chat.ConversationInfo;
 import com.jinlei.aiassistant.service.ConversationService;
 import org.junit.jupiter.api.Test;
@@ -100,5 +101,25 @@ class ConversationControllerTest {
 
         verify(conversationService)
                 .deleteConversation("123");
+    }
+
+    @Test
+    void shouldRenameConversation() {
+
+        RenameConversationRequest request =
+                new RenameConversationRequest();
+
+        request.setTitle("Java");
+
+        webTestClient
+                .patch()
+                .uri("/api/conversations/123/title")
+                .bodyValue(request)
+                .exchange()
+                .expectStatus()
+                .isNoContent();
+
+        verify(conversationService)
+                .updateTitle("123", "Java");
     }
 }

@@ -28,7 +28,6 @@ public class JpaConversationRepository implements ConversationRepository {
         this.mapper = mapper;
     }
 
-
     @Override
     public Optional<Conversation> findById(
             String conversationId
@@ -51,8 +50,20 @@ public class JpaConversationRepository implements ConversationRepository {
                                 new ConversationEntity(conversationId)
                         );
 
+        entity.setTitle(
+                conversation.getTitle()
+        );
+
         entity.setSummary(
                 conversation.getSummary()
+        );
+
+        entity.setCreatedAt(
+                conversation.getCreatedAt()
+        );
+
+        entity.setUpdatedAt(
+                conversation.getUpdatedAt()
         );
 
         conversation.getMessages()

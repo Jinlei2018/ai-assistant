@@ -1,5 +1,6 @@
 package com.jinlei.aiassistant.controller;
 
+import com.jinlei.aiassistant.controller.request.RenameConversationRequest;
 import com.jinlei.aiassistant.domain.chat.ConversationInfo;
 import com.jinlei.aiassistant.dto.chat.ConversationResponse;
 import com.jinlei.aiassistant.service.ConversationService;
@@ -50,6 +51,19 @@ public class ConversationController {
             @PathVariable String conversationId
     ) {
         service.deleteConversation(conversationId);
+    }
+
+    @PatchMapping("/{conversationId}/title")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void renameConversation(
+            @PathVariable String conversationId,
+            @RequestBody RenameConversationRequest request
+    ) {
+
+        service.updateTitle(
+                conversationId,
+                request.getTitle()
+        );
     }
 
 }

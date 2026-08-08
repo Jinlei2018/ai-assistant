@@ -69,4 +69,14 @@ public class ConversationMapper {
             );
         }
     }
+
+    public void updateEntity(
+            Conversation conversation,
+            ConversationEntity entity
+    ) {
+        entity.setTitle(conversation.getTitle());
+        entity.setSummary(conversation.getSummary());
+        entity.setCreatedAt(conversation.getCreatedAt());
+        entity.setUpdatedAt(conversation.getUpdatedAt());
+    }
 }

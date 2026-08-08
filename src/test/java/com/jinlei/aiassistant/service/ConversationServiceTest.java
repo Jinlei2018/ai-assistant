@@ -1,7 +1,10 @@
 package com.jinlei.aiassistant.service;
 
 import com.jinlei.aiassistant.config.AIProperties;
+import com.jinlei.aiassistant.domain.chat.Conversation;
 import com.jinlei.aiassistant.domain.chat.ConversationInfo;
+import com.jinlei.aiassistant.entity.chat.ConversationEntity;
+import com.jinlei.aiassistant.mapper.ConversationMapper;
 import com.jinlei.aiassistant.provider.AIClient;
 import com.jinlei.aiassistant.provider.AIClientFactory;
 import com.jinlei.aiassistant.repository.ConversationRepository;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +26,7 @@ class ConversationServiceTest {
     private ConversationService conversationService;
     private AIProperties aiProperties;
     private AIClientFactory factory;
+    private ConversationMapper mapper;
 
 
     @BeforeEach
@@ -64,6 +69,8 @@ class ConversationServiceTest {
                         aiProperties,
                         factory
                 );
+
+        mapper = new ConversationMapper();
     }
 
     @Test
@@ -383,6 +390,49 @@ class ConversationServiceTest {
         assertEquals(
                 0,
                 conversationService.getConversations().size()
+        );
+    }
+
+    @Test
+    void shouldUpdateConversationEntity() {
+
+        Conversation conversation = new Conversation();
+
+        conversation.setTitle("Java");
+        conversation.setSummary("User likes Java");
+
+        LocalDateTime createdAt = LocalDateTime.now().minusMinutes(10);
+        LocalDateTime updatedAt = LocalDateTime.now();
+
+        conversation.setCreatedAt(createdAt);
+        conversation.setUpdatedAt(updatedAt);
+
+        ConversationEntity entity =
+                new ConversationEntity("123");
+
+        mapper.updateEntity(
+                conversation,
+                entity
+        );
+
+        assertEquals(
+                "Java",
+                entity.getTitle()
+        );
+
+        assertEquals(
+                "User likes Java",
+                entity.getSummary()
+        );
+
+        assertEquals(
+                createdAt,
+                entity.getCreatedAt()
+        );
+
+        assertEquals(
+                updatedAt,
+                entity.getUpdatedAt()
         );
     }
 }
